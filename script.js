@@ -1,4 +1,3 @@
-// Gallery data - in a real application, this might come from a database or API
 const galleryData = [
     {
         id: 1,
@@ -74,7 +73,6 @@ const galleryData = [
     }
 ];
 
-// DOM Elements
 const gallery = document.querySelector('.gallery');
 const filterButtons = document.querySelectorAll('.filter-btn');
 const lightbox = document.querySelector('.lightbox');
@@ -85,17 +83,14 @@ const lightboxNext = document.querySelector('.lightbox-next');
 const searchInput = document.getElementById('search-input');
 const searchButton = document.getElementById('search-button');
 
-// Current image index for lightbox navigation
 let currentImageIndex = 0;
 let filteredGallery = [...galleryData];
 
-// Initialize gallery
 function initGallery() {
     renderGallery(galleryData);
     setupEventListeners();
 }
 
-// Render gallery items
 function renderGallery(items) {
     gallery.innerHTML = '';
     filteredGallery = items;
@@ -120,7 +115,6 @@ function renderGallery(items) {
     });
 }
 
-// Filter gallery items by category
 function filterGallery(category) {
     let filteredItems;
 
@@ -130,7 +124,6 @@ function filterGallery(category) {
         filteredItems = galleryData.filter(item => item.category === category);
     }
 
-    // Preserve liked state
     filteredItems = filteredItems.map(item => {
         const originalItem = galleryData.find(original => original.id === item.id);
         return { ...item, liked: originalItem.liked };
@@ -139,10 +132,8 @@ function filterGallery(category) {
     renderGallery(filteredItems);
 }
 
-// Search gallery items
 function searchGallery(query) {
     if (!query.trim()) {
-        // If search is empty, show all images
         renderGallery(galleryData);
         return;
     }
@@ -154,7 +145,6 @@ function searchGallery(query) {
         item.category.toLowerCase().includes(searchTerm)
     );
 
-    // Preserve liked state
     const resultsWithLikedState = searchResults.map(item => {
         const originalItem = galleryData.find(original => original.id === item.id);
         return { ...item, liked: originalItem.liked };
@@ -162,12 +152,10 @@ function searchGallery(query) {
 
     renderGallery(resultsWithLikedState);
 
-    // Reset active filter button
     filterButtons.forEach(btn => btn.classList.remove('active'));
     document.querySelector('[data-filter="all"]').classList.add('active');
 }
 
-// Open lightbox
 function openLightbox(index) {
     currentImageIndex = index;
     const item = filteredGallery[index];
@@ -176,19 +164,15 @@ function openLightbox(index) {
     lightboxCaption.textContent = `${item.title} - ${item.description}`;
     lightbox.classList.add('active');
 
-    // Disable scrolling on body
     document.body.style.overflow = 'hidden';
 }
 
-// Close lightbox
 function closeLightboxFunc() {
     lightbox.classList.remove('active');
 
-    // Re-enable scrolling
     document.body.style.overflow = '';
 }
 
-// Navigate to previous image
 function prevImage() {
     currentImageIndex = (currentImageIndex - 1 + filteredGallery.length) % filteredGallery.length;
     const item = filteredGallery[currentImageIndex];
@@ -197,7 +181,6 @@ function prevImage() {
     lightboxCaption.textContent = `${item.title} - ${item.description}`;
 }
 
-// Navigate to next image
 function nextImage() {
     currentImageIndex = (currentImageIndex + 1) % filteredGallery.length;
     const item = filteredGallery[currentImageIndex];
@@ -206,37 +189,28 @@ function nextImage() {
     lightboxCaption.textContent = `${item.title} - ${item.description}`;
 }
 
-// Setup event listeners
 function setupEventListeners() {
-    // Filter buttons
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active class from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
 
-            // Add active class to clicked button
             button.classList.add('active');
 
-            // Filter gallery
             const category = button.dataset.filter;
             filterGallery(category);
         });
     });
 
-    // Gallery item click (open lightbox or like)
     gallery.addEventListener('click', (e) => {
-        // Check if like button was clicked
         if (e.target.closest('.like-button')) {
-            e.stopPropagation(); // Prevent lightbox from opening
+            e.stopPropagation();
             const galleryItem = e.target.closest('.gallery-item');
             const id = parseInt(galleryItem.dataset.id);
             const index = galleryData.findIndex(item => item.id === id);
 
             if (index !== -1) {
-                // Toggle liked state
                 galleryData[index].liked = !galleryData[index].liked;
 
-                // Update UI
                 const likeButton = e.target.closest('.like-button');
                 if (galleryData[index].liked) {
                     likeButton.classList.add('liked');
@@ -247,7 +221,6 @@ function setupEventListeners() {
             return;
         }
 
-        // Handle lightbox opening
         const galleryItem = e.target.closest('.gallery-item');
         if (galleryItem) {
             const id = parseInt(galleryItem.dataset.id);
@@ -258,21 +231,16 @@ function setupEventListeners() {
         }
     });
 
-    // Close lightbox when clicking on the lightbox background or image
     lightbox.addEventListener('click', (e) => {
-        // Only close if clicking on the lightbox background or the image itself
         if (e.target === lightbox || e.target.classList.contains('lightbox-img')) {
             closeLightboxFunc();
         }
     });
 
-    // Previous image
     lightboxPrev.addEventListener('click', prevImage);
 
-    // Next image
     lightboxNext.addEventListener('click', nextImage);
 
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
         if (!lightbox.classList.contains('active')) return;
 
@@ -285,23 +253,15 @@ function setupEventListeners() {
         }
     });
 
-    // Search functionality
     searchButton.addEventListener('click', () => {
         searchGallery(searchInput.value);
     });
 
-    // Search on Enter key
     searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             searchGallery(searchInput.value);
         }
     });
-
-    // Real-time search (optional - uncomment if you want search-as-you-type)
-    // searchInput.addEventListener('input', () => {
-    //     searchGallery(searchInput.value);
-    // });
 }
 
-// Initialize gallery when DOM is loaded
 document.addEventListener('DOMContentLoaded', initGallery);
