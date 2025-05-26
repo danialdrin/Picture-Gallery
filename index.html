@@ -10,10 +10,37 @@
 <body>
     <header>
         <div class="container">
-            <h1>Photo Gallery</h1>
-            <p>A collection of beautiful images</p>
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Photo Gallery</h1>
+                    <p>A collection of beautiful images</p>
+                </div>
+                <div class="header-controls">
+                    <button id="upload-btn" class="control-btn" title="Upload Image">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                    <button id="theme-toggle" class="control-btn" title="Toggle Theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
+
+    <!-- Thumbnail Navigation at top-center -->
+    <div class="thumbnail-container">
+        <div class="thumbnail-nav">
+            <button class="thumbnail-nav-btn prev-thumbnails" id="prev-thumbnails">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <div class="thumbnail-strip" id="thumbnail-strip">
+                <!-- Thumbnails will be generated here by JavaScript -->
+            </div>
+            <button class="thumbnail-nav-btn next-thumbnails" id="next-thumbnails">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
 
     <div class="search-container">
         <div class="container">
@@ -29,6 +56,7 @@
             <div class="gallery-controls">
                 <div class="filter-buttons">
                     <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="recent">Recent</button>
                     <button class="filter-btn" data-filter="nature">Nature</button>
                     <button class="filter-btn" data-filter="architecture">Architecture</button>
                     <button class="filter-btn" data-filter="travel">Travel</button>
@@ -42,15 +70,195 @@
     </main>
 
     <div class="lightbox">
+        <!-- Fixed Title at Top -->
+        <div class="lightbox-title">
+            <h2 id="lightbox-title-text">Image Title</h2>
+        </div>
+
         <div class="lightbox-content">
             <img src="" alt="" class="lightbox-img">
-            <div class="lightbox-caption"></div>
         </div>
+
+        <!-- Fixed Action Buttons at Bottom -->
+        <div class="lightbox-actions">
+            <button id="slideshow-btn" class="lightbox-action-btn" title="Start Slideshow">
+                <i class="fas fa-play"></i>
+                <span>Slideshow</span>
+            </button>
+            <button id="zoom-in-btn" class="lightbox-action-btn" title="Zoom In">
+                <i class="fas fa-search-plus"></i>
+                <span>Zoom In</span>
+            </button>
+            <button id="zoom-out-btn" class="lightbox-action-btn" title="Zoom Out">
+                <i class="fas fa-search-minus"></i>
+                <span>Zoom Out</span>
+            </button>
+            <button id="compare-btn" class="lightbox-action-btn" title="Compare Images">
+                <i class="fas fa-columns"></i>
+                <span>Compare</span>
+            </button>
+            <button id="download-btn" class="lightbox-action-btn" title="Download Image">
+                <i class="fas fa-download"></i>
+                <span>Download</span>
+            </button>
+            <button id="fullscreen-btn" class="lightbox-action-btn" title="Toggle Fullscreen">
+                <i class="fas fa-expand"></i>
+                <span>Fullscreen</span>
+            </button>
+            <button id="close-lightbox" class="lightbox-action-btn" title="Close">
+                <i class="fas fa-times"></i>
+                <span>Close</span>
+            </button>
+        </div>
+
         <div class="lightbox-controls">
             <button class="lightbox-prev"><i class="fas fa-chevron-left"></i></button>
             <button class="lightbox-next"><i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="upload-modal">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2>Upload Image</h2>
+                <button id="close-upload" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="drop-area" class="upload-drop-area">
+                <label for="input-file">
+                    <input type="file" hidden name="file" id="input-file" accept="image/*" multiple>
+                </label>
+                <div class="upload-img-view" id="img-view">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <p>Drag and drop or click here <br> to upload images</p>
+                    <span>Upload any images from your device</span>
+                </div>
+            </div>
+            <div class="upload-actions">
+                <button id="add-to-gallery" class="upload-btn" disabled>Add to Gallery</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="upload-modal">
+        <div class="upload-modal-content">
+            <div class="upload-modal-header">
+                <h2>Keyboard Shortcuts</h2>
+                <button id="close-help" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="help-content">
+                <div class="shortcut-section">
+                    <h3>Global Shortcuts</h3>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + U</kbd>
+                        <span>Open Upload Modal</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + D</kbd>
+                        <span>Toggle Dark/Light Theme</span>
+                    </div>
+                </div>
+
+                <div class="shortcut-section">
+                    <h3>Thumbnail Navigation</h3>
+                    <div class="shortcut-item">
+                        <kbd>Click</kbd>
+                        <span>Thumbnail to view image in lightbox</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>← →</kbd>
+                        <span>Navigate thumbnail strip</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Auto-sync</kbd>
+                        <span>Thumbnails sync with lightbox navigation</span>
+                    </div>
+                </div>
+
+                <div class="shortcut-section">
+                    <h3>Category Filters</h3>
+                    <div class="shortcut-item">
+                        <kbd>1</kbd>
+                        <span>Show All Images</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>2</kbd>
+                        <span>Show Recent Images</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>3</kbd>
+                        <span>Show Nature Images</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>4</kbd>
+                        <span>Show Architecture Images</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>5</kbd>
+                        <span>Show Travel Images</span>
+                    </div>
+                </div>
+
+                <div class="shortcut-section">
+                    <h3>Lightbox Controls</h3>
+                    <div class="shortcut-item">
+                        <kbd>←</kbd>
+                        <span>Previous Image</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>→</kbd>
+                        <span>Next Image</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Double-click</kbd>
+                        <span>Zoom In/Out</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Swipe</kbd>
+                        <span>Navigate on Touch Devices</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Esc</kbd>
+                        <span>Close Lightbox/Modal</span>
+                    </div>
+                </div>
+
+                <div class="shortcut-section">
+                    <h3>Advanced Features</h3>
+                    <div class="shortcut-item">
+                        <kbd>▶️</kbd>
+                        <span>Auto Slideshow</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>🔍+</kbd>
+                        <span>Zoom In</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>🔍-</kbd>
+                        <span>Zoom Out</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>📊</kbd>
+                        <span>Image Comparison</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>📱</kbd>
+                        <span>Touch Gestures</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fixed Help Button in bottom-right corner -->
+    <button id="help-btn" class="help-btn-fixed" title="Keyboard Shortcuts">
+        <i class="fas fa-question"></i>
+    </button>
 
     <script src="script.js"></script>
 </body>
